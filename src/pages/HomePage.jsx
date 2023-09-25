@@ -1,8 +1,10 @@
-import NavBar from "../components/NavBar";
+import PageNav from "../components/PageNav";
+import AppLayout from "./AppLayout";
 
 function HomePage() {
   return <div>
-    <NavBar />
+    <AppLayout/>
+    <PageNav />
     
     <h1>HomePage</h1>
   </div>

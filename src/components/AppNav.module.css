@@ -1,0 +1,9 @@
+.nav{
+  background-color: brown;
+}
+
+:global(.flexNav){
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

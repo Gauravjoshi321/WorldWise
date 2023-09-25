@@ -1,10 +1,10 @@
 import { NavLink } from "react-router-dom";
-import styles from "./NavBar.module.css"
+import styles from "./PageNav.module.css"
 
 function NavBar () {
 return (
-  <div className={styles.nav}>
-  <ul>
+  <nav className={styles.nav}>
+  <ul className="flexNav">
     <li>
       <NavLink to={"/"}>HOMEPAGE</NavLink>
     </li>
@@ -15,7 +15,7 @@ return (
       <NavLink to={"/product"}>PRODUCT</NavLink>
     </li>
   </ul>
-  </div>
+  </nav>
 )
 }
 

@@ -1,4 +1,4 @@
-import NavBar from "../components/NavBar";
+import NavBar from "../components/PageNav";
 
 function Product() {
   return <div>
