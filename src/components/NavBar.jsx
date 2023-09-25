@@ -1,16 +1,16 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function NavBar () {
 return (
   <ul>
     <li>
-      <Link to={"/"}>HOMEPAGE</Link>
+      <NavLink to={"/"}>HOMEPAGE</NavLink>
     </li>
     <li>
-      <Link to={"/pricing"}>PRICING</Link>
+      <NavLink to={"/pricing"}>PRICING</NavLink>
     </li>
     <li>
-      <Link to={"/product"}>PRODUCT</Link>
+      <NavLink to={"/product"}>PRODUCT</NavLink>
     </li>
   </ul>
 )
