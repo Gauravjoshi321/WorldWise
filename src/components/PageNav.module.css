@@ -7,3 +7,8 @@
   list-style: none;
   justify-content: space-between;
 }
+
+:global(.active) {
+background-color: blueviolet;
+font-size: 20px;
+}
