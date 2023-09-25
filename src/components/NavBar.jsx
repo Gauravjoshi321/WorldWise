@@ -4,7 +4,13 @@ function NavBar () {
 return (
   <ul>
     <li>
-      <Link to={"/"}>HomePage</Link>
+      <Link to={"/"}>HOMEPAGE</Link>
+    </li>
+    <li>
+      <Link to={"/pricing"}>PRICING</Link>
+    </li>
+    <li>
+      <Link to={"/product"}>PRODUCT</Link>
     </li>
   </ul>
 )
