@@ -1,7 +1,9 @@
 import { NavLink } from "react-router-dom";
+import styles from "./NavBar.module.css"
 
 function NavBar () {
 return (
+  <div className={styles.nav}>
   <ul>
     <li>
       <NavLink to={"/"}>HOMEPAGE</NavLink>
@@ -13,6 +15,7 @@ return (
       <NavLink to={"/product"}>PRODUCT</NavLink>
     </li>
   </ul>
+  </div>
 )
 }
 
