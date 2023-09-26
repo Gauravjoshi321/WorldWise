@@ -3,7 +3,8 @@ import styles from "./AppNav.module.css"
 function AppNav () {
   return (
     <nav className={styles.nav}>
-      AppNav
+      <div>App Navigation</div>
+      <div>List Of Cities</div>
     </nav>
   )
 }
