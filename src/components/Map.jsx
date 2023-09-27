@@ -9,9 +9,11 @@ function Map() {
   const lng = searchParams.get("lng");
 
   return (
+
     <div className={styles.mapContainer} onClick={() => navigate("form")}>
       {lat} {lng}
     </div>
+    
   )
 }
 
