@@ -12,7 +12,7 @@ function CityList () {
 
   if(isLoading) return <Spinner/>;
   if(isError) return <Message message={"Something went wrong... please refresh"}/>;
-  else if(!cities.length) return <Message message={message}/>;
+  if(!cities.length) return <Message message={message}/>;
 
 
   return (
