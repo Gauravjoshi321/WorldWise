@@ -2,11 +2,11 @@ import SideBar from "../components/SideBar";
 import Map from "../components/Map";
 import styles from "./AppLayout.module.css";
 
-function AppLayout () {
+function AppLayout() {
   return (
     <div className={styles.app}>
-      <SideBar/>
-      <Map/>
+      <SideBar />
+      <Map />
     </div>
   )
 }
