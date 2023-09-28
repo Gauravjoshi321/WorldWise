@@ -2,8 +2,11 @@ import CountryItem from "./CountryItem";
 import styles from "./CountryList.module.css";
 import Message from "./Message";
 import Spinner from "./Spinner";
+import { useCitiesData } from "../contexts/CitiesContext";
 
-function CountryList ({cities, isLoading, isError}) {
+function CountryList () {
+
+  const {cities, isLoading, isError} = useCitiesData();
 
   if(isLoading) return <Spinner/>;
   if(isError) return <Message message={"Something went wrong... please refresh"}/>
