@@ -3,24 +3,46 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from "rea
 import styles from "./Map.module.css";
 import { useEffect, useState } from "react";
 import { useCitiesData } from "../contexts/CitiesContext";
+import { useGeolocation } from "../Hooks/Geolocation";
+import Button from "./Button";
 
 function Map() {
   const [searchParams] = useSearchParams();
   const [mapPosition, setMapPosition] = useState([38.7440505, -9.2421368]);
   const { cities } = useCitiesData();
+  const {
+    isLoading: isLoadingPosition,
+    position: geolocationPosition,
+    getPosition
+  }
+    = useGeolocation();
+
 
   const latMap = searchParams.get("lat");
   const lngMap = searchParams.get("lng");
 
   useEffect(function () {
-
     if (latMap && lngMap) setMapPosition([latMap, lngMap]);
-
   }, [latMap, lngMap])
+
+
+  useEffect(function () {
+    if (geolocationPosition)
+      setMapPosition([geolocationPosition.lat, geolocationPosition.lng])
+
+  }, [geolocationPosition])
 
   return (
 
     <div className={styles.mapContainer} >
+
+      <Button
+        type="position"
+        onclick={getPosition}
+      >
+        {isLoadingPosition ? "Loading..." : "Use your position"}
+      </Button>
+
       <MapContainer
         center={mapPosition}
         zoom={6}
@@ -45,7 +67,7 @@ function Map() {
         <SetMapFocus position={mapPosition} />
         <DetectClick />
       </MapContainer>
-    </div>
+    </div >
   )
 }
 
