@@ -6,6 +6,7 @@ import { useCitiesData } from "../contexts/CitiesContext";
 import { useGeolocation } from "../Hooks/Geolocation";
 import Button from "./Button";
 
+
 function Map() {
   const [searchParams] = useSearchParams();
   const [mapPosition, setMapPosition] = useState([38.7440505, -9.2421368]);
@@ -17,6 +18,7 @@ function Map() {
   }
     = useGeolocation();
 
+  console.log(isLoadingPosition, geolocationPosition);
 
   const latMap = searchParams.get("lat");
   const lngMap = searchParams.get("lng");
@@ -27,20 +29,18 @@ function Map() {
 
 
   useEffect(function () {
-    if (geolocationPosition)
+    if (geolocationPosition !== null)
       setMapPosition([geolocationPosition.lat, geolocationPosition.lng])
 
   }, [geolocationPosition])
+
 
   return (
 
     <div className={styles.mapContainer} >
 
-      <Button
-        type="position"
-        onclick={getPosition}
-      >
-        {isLoadingPosition ? "Loading..." : "Use your position"}
+      <Button type='position' onClick={getPosition}>
+        {isLoadingPosition ? "Loading..." : "Your Location"}
       </Button>
 
       <MapContainer
