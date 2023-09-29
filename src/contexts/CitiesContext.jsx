@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useContext } from "react";
 
 const CitiesContext = createContext();
 
-function CitiesProvider ({children}) {
+function CitiesProvider({ children }) {
 
   const [cities, setCities] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -13,36 +13,74 @@ function CitiesProvider ({children}) {
 
   useEffect(function () {
     async function getCitiesData() {
-      try{
+      try {
 
-      setIsLoading(true);
-      const res = await fetch(`${BASE_URL}/cities`);
-      const data = await res.json();
-      setCities(data);
+        setIsLoading(true);
+        const res = await fetch(`${BASE_URL}/cities`);
+        const data = await res.json();
+        setCities(data);
 
-      }catch (err) {
+      } catch (err) {
         setIsError(true);
       } finally {
         setIsLoading(false);
       }
-  }
+    }
 
-  getCitiesData();
+    getCitiesData();
   }, [])
 
   async function getCity(id) {
-    try{
+    try {
       setIsLoading(true);
       const res = await fetch(`${BASE_URL}/cities/${id}`);
       const data = await res.json();
       setCurrentCity(data);
 
-      }catch (err) {
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
+    } catch (err) {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
   }
+
+  async function createCity(newCity) {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`${BASE_URL}/cities`, {
+        method: 'POST',
+        body: JSON.stringify(newCity),
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      const data = await res.json();
+
+      setCities((cities) => [...cities, data]);
+    } catch (err) {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function deleteCity(id) {
+    try {
+      setIsLoading(true);
+      await fetch(`${BASE_URL}/cities/${id}`, {
+        method: "DELETE",
+      });
+
+      setCities(cities => {
+        return cities.filter(city => city.id !== id)
+      });
+    } catch (err) {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
 
   return (
     <CitiesContext.Provider value={{
@@ -51,7 +89,9 @@ function CitiesProvider ({children}) {
       setIsLoading,
       isError,
       currentCity,
-      getCity
+      getCity,
+      createCity,
+      deleteCity
     }}>
       {children}
     </CitiesContext.Provider>
@@ -59,9 +99,9 @@ function CitiesProvider ({children}) {
 }
 
 const useCitiesData = function () {
-   const context = useContext(CitiesContext);
-   if(context === undefined) throw new Error("CitiesContext was used outside the CitiesProvider...which is not acceptable.")
-   return context;
+  const context = useContext(CitiesContext);
+  if (context === undefined) throw new Error("CitiesContext was used outside the CitiesProvider...which is not acceptable.")
+  return context;
 }
 
-export {CitiesProvider, useCitiesData};
+export { CitiesProvider, useCitiesData };

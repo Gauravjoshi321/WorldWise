@@ -6,18 +6,17 @@ import { useCitiesData } from "../contexts/CitiesContext";
 
 const message = "Hiee, Add your first city by clicking on a city on the map";
 
-function CityList () {
+function CityList() {
 
-  const {cities, isLoading, isError} = useCitiesData();
+  const { cities, isLoading, isError } = useCitiesData();
 
-  if(isLoading) return <Spinner/>;
-  if(isError) return <Message message={"Something went wrong... please refresh"}/>;
-  if(!cities.length) return <Message message={message}/>;
-
+  if (isLoading) return <Spinner />;
+  if (isError) return <Message message={"Something went wrong... please refresh"} />;
+  if (!cities.length) return <Message message={message} />;
 
   return (
     <ul className={styles.cityList}>
-     { cities.map(city => (<CityItem city={city} key={city.id}/>))}
+      {cities.map(city => (<CityItem city={city} key={city.id} />))}
     </ul>
   )
 }
