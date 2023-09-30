@@ -67,7 +67,7 @@ const reducer = function (state, action) {
       }
     }
 
-    default: throw new Error()
+    default: throw new Error("Unknown action");
   }
 }
 

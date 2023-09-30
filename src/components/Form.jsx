@@ -14,7 +14,6 @@ import { useCitiesData } from "../contexts/CitiesContext";
 import { useNavigate } from "react-router-dom";
 
 
-
 const BASE_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
 export function convertToEmoji(countryCode) {
@@ -25,15 +24,87 @@ export function convertToEmoji(countryCode) {
   return String.fromCodePoint(...codePoints);
 }
 
+const initialState = {
+  cityName: "",
+  country: "",
+  date: new Date(),
+  notes: "",
+  isLoadingGeolocation: false,
+  geoCodingError: null,
+  emoji: ""
+}
+
+const reducer = function (state, action) {
+  switch (action.type) {
+    case "geolocation/loading": {
+      return {
+        ...state,
+        geoCodingError: null,
+        isLoadingGeolocation: true
+      }
+    }
+    case "geolocation/hasLoaded": {
+      const { city, locality, countryName, countryCode } = action.payload
+      return {
+        ...state,
+        isLoadingGeolocation: false,
+        cityName: city || locality || "",
+        country: countryName,
+        emoji: countryCode
+      }
+    }
+    case "geolocation/dataFetchingFailed": {
+      return {
+        ...state,
+        isLoadingGeolocation: false,
+        geoCodingError: action.payload,
+      }
+    }
+    case "setCityName/Input": {
+      return {
+        ...state,
+        cityName: action.payload
+      }
+    }
+    case "setDate/Input": {
+      return {
+        ...state,
+        Date: action.payload
+      }
+    }
+    case "setNotes/Input": {
+      return {
+        ...state,
+        notes: action.payload
+      }
+    }
+
+    default: throw new Error("Unknown action")
+  }
+}
+
 function Form() {
-  const [cityName, setCityName] = useState("");
-  const [country, setCountry] = useState("");
-  const [date, setDate] = useState(new Date());
-  const [notes, setNotes] = useState("");
+
+  const [state, dispatch] = useState(reducer, initialState);
+  const {
+    cityName,
+    country,
+    date,
+    notes,
+    isLoadingGeolocation,
+    geoCodingError,
+    emoji
+  } = state();
+
+  // const [cityName, setCityName] = useState("");
+  // const [country, setCountry] = useState("");
+  // const [date, setDate] = useState(new Date());
+  // const [notes, setNotes] = useState("");
+  // const [isLoadingGeolocation, setIsLoadingGeolocation] = useState(false);
+  // const [geoCodingError, setGeoCodingError] = useState(null);
+  // const [emoji, setEmoji] = useState("");
+
   const { lat, lng } = useURLPosition();
-  const [isLoadingGeolocation, setIsLoadingGeolocation] = useState(false);
-  const [geoCodingError, setGeoCodingError] = useState(null);
-  const [emoji, setEmoji] = useState("");
   const { createCity, isLoading } = useCitiesData();
   const navigate = useNavigate();
 
@@ -43,23 +114,21 @@ function Form() {
 
     async function getCityName() {
       try {
-        setGeoCodingError(null);
-        setIsLoadingGeolocation(true);
+        dispatch({ type: "geolocation/loading" })
         const res = await fetch(`${BASE_URL}?latitude=${lat}&longitude=${lng}`)
         const data = await res.json();
 
         if (!data.countryCode) throw new Error("Heyy!!! That doesn't seem to be a city. Click somewhere else.")
 
-        setCityName(data.city || data.locality || "");
-        setCountry(data.countryName);
-        setEmoji(convertToEmoji(data.countryCode));
+        const { city, locality, countryName, countryCode } = data;
+        dispatch({
+          type: "geolocation/hasLoaded",
+          payload: { city, locality, countryName, countryCode }
+        })
 
       }
       catch (err) {
-        setGeoCodingError(err.message);
-      }
-      finally {
-        setIsLoadingGeolocation(false);
+        dispatch({ type: "geolocation/dataFetchingFailed", payload: err.message });
       }
     }
     getCityName();
@@ -93,7 +162,7 @@ function Form() {
         <label htmlFor="cityName">City name</label>
         <input
           id="cityName"
-          onChange={(e) => setCityName(e.target.value)}
+          onChange={(e) => dispatch({ type: "setCityName/Input", payload: e.target.value })}
           value={cityName}
         />
         <span className={styles.flag}>{emoji}</span>
@@ -105,7 +174,7 @@ function Form() {
         <DatePicker
           id="date"
           selected={date}
-          onChange={(date) => setDate(date)}
+          onChange={(date) => dispatch({ type: "setDate/Input", payload: date })}
           dateFormat="dd/MM/yyyy"
         />
       </div>
@@ -114,7 +183,7 @@ function Form() {
         <label htmlFor="notes">Notes about your trip to {cityName}</label>
         <textarea
           id="notes"
-          onChange={(e) => setNotes(e.target.value)}
+          onChange={(e) => dispatch({ type: "setNotes/Input", payload: e.target.value })}
           value={notes}
         />
       </div>
