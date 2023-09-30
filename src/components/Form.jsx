@@ -1,6 +1,6 @@
 // "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=0&longitude=0"
 
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 import BackButton from "./BackButton";
 import styles from "./Form.module.css";
@@ -36,6 +36,7 @@ const initialState = {
 
 const reducer = function (state, action) {
   switch (action.type) {
+
     case "geolocation/loading": {
       return {
         ...state,
@@ -69,7 +70,7 @@ const reducer = function (state, action) {
     case "setDate/Input": {
       return {
         ...state,
-        Date: action.payload
+        date: action.payload
       }
     }
     case "setNotes/Input": {
@@ -85,7 +86,7 @@ const reducer = function (state, action) {
 
 function Form() {
 
-  const [state, dispatch] = useState(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState);
   const {
     cityName,
     country,
@@ -94,7 +95,7 @@ function Form() {
     isLoadingGeolocation,
     geoCodingError,
     emoji
-  } = state();
+  } = state;
 
   // const [cityName, setCityName] = useState("");
   // const [country, setCountry] = useState("");
