@@ -1,13 +1,80 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useEffect, useContext, useReducer } from "react";
 
 const CitiesContext = createContext();
 
+const initialState = {
+  cities: [],
+  isLoading: false,
+  isError: false,
+  currentCity: {}
+}
+
+const reducer = function (state, action) {
+  switch (action.type) {
+
+    case "data/loading": {
+      return {
+        ...state,
+        isLoading: true,
+        isError: false
+      }
+    }
+    case "dataFetch/Failed": {
+      return {
+        ...state,
+        isLoading: false,
+        isError: true
+      }
+    }
+
+    // 1.
+    case "cities/loaded": {
+      return {
+        ...state,
+        isLoading: false,
+        cities: action.payload
+      }
+    }
+    case "citiesFetch/Failed": {
+      return {
+        ...state,
+        isLoading: false,
+        isError: true
+      }
+    }
+    // 2.
+    case "city/loaded": {
+      return {
+        ...state,
+        isLoading: false,
+        currentCity: action.payload
+      }
+    }
+    // 3. 
+    case "createCity/updateCities": {
+      return {
+        ...state,
+        isLoading: false,
+        cities: [...state.cities, action.payload]
+      }
+    }
+    // 4. 
+    case "deleteCity/updateCities": {
+      return {
+        ...state,
+        isLoading: false,
+        cities: state.cities.filter(city => city.id !== action.payload)
+      }
+    }
+
+    default: throw new Error()
+  }
+}
+
 function CitiesProvider({ children }) {
 
-  const [cities, setCities] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [currentCity, setCurrentCity] = useState({});
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { cities, isLoading, isError, currentCity } = state;
 
   const BASE_URL = "http://localhost:9000";
 
@@ -15,15 +82,13 @@ function CitiesProvider({ children }) {
     async function getCitiesData() {
       try {
 
-        setIsLoading(true);
+        dispatch({ type: "data/loading" });
         const res = await fetch(`${BASE_URL}/cities`);
         const data = await res.json();
-        setCities(data);
+        dispatch({ type: "cities/loaded", payload: data });
 
       } catch (err) {
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
+        dispatch({ type: "dataFetch/Failed" });
       }
     }
 
@@ -32,21 +97,21 @@ function CitiesProvider({ children }) {
 
   async function getCity(id) {
     try {
-      setIsLoading(true);
+      if (currentCity.id === Number(id)) return;
+      dispatch({ type: "data/loading" });
       const res = await fetch(`${BASE_URL}/cities/${id}`);
       const data = await res.json();
-      setCurrentCity(data);
+
+      dispatch({ type: "city/loaded", payload: data });
 
     } catch (err) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
+      dispatch({ type: "dataFetch/Failed" });
     }
   }
 
   async function createCity(newCity) {
     try {
-      setIsLoading(true);
+      dispatch({ type: "data/loading" });
       const res = await fetch(`${BASE_URL}/cities`, {
         method: 'POST',
         body: JSON.stringify(newCity),
@@ -56,28 +121,23 @@ function CitiesProvider({ children }) {
       });
       const data = await res.json();
 
-      setCities((cities) => [...cities, data]);
+      dispatch({ type: "createCity/updateCities", payload: data });
     } catch (err) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
+      dispatch({ type: "dataFetch/Failed" });
     }
   }
 
   async function deleteCity(id) {
     try {
-      setIsLoading(true);
+      dispatch({ type: "data/loading" });
       await fetch(`${BASE_URL}/cities/${id}`, {
         method: "DELETE",
       });
 
-      setCities(cities => {
-        return cities.filter(city => city.id !== id)
-      });
+      dispatch({ type: "deleteCity/updateCities", payload: id })
     } catch (err) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
+      dispatch({ type: "dataFetch/Failed" });
+
     }
   }
 
@@ -86,7 +146,6 @@ function CitiesProvider({ children }) {
     <CitiesContext.Provider value={{
       cities,
       isLoading,
-      setIsLoading,
       isError,
       currentCity,
       getCity,
