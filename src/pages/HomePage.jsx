@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 
 export default function Homepage() {
   return (
-    
+
     <main className={styles.homepage}>
-      <PageNav/>
-      
+      <PageNav />
+
       <section>
         <h1>
           You travel the world.
@@ -20,7 +20,7 @@ export default function Homepage() {
           you have wandered the world.
         </h2>
 
-        <Link to={"/app"} className="cta">Start Tracking</Link>
+        <Link to={"/login"} className="cta">Start Tracking</Link>
       </section>
     </main>
 
